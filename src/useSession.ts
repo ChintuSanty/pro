@@ -32,15 +32,15 @@ function getBrowser(): string {
 
 export function useSession(activeIndex: number, totalSlides: number) {
   const sessionId = useRef(getSessionId())
-  const maxReached = useRef(1)
+  const maxReached = useRef(0)
+  const isFirstWrite = useRef(true)
 
-  // Always use setDoc with merge:true — works for both create and update
-  // avoids permission issues that updateDoc can have on non-existent docs
   useEffect(() => {
     const slideNum = activeIndex + 1
     if (slideNum > maxReached.current) maxReached.current = slideNum
 
     const device = `${getDeviceInfo()} · ${getBrowser()}`
+
     const payload: Record<string, unknown> = {
       device,
       updatedAt: serverTimestamp(),
@@ -50,12 +50,13 @@ export function useSession(activeIndex: number, totalSlides: number) {
       slideHistory: arrayUnion({ slide: slideNum, seenAt: new Date().toISOString() }),
     }
 
-    // Only set startedAt on first slide to avoid overwriting
-    if (slideNum === 1) {
+    // Always set startedAt on first write of this session (regardless of slide)
+    if (isFirstWrite.current) {
       payload.startedAt = serverTimestamp()
+      isFirstWrite.current = false
     }
 
     setDoc(doc(db, 'sessions', sessionId.current), payload, { merge: true })
-      .catch(err => console.error('[session] Firestore write failed:', err))
+      .catch(err => console.error('[session] write failed — check Firestore rules:', err.code, err.message))
   }, [activeIndex, totalSlides])
 }

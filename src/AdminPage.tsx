@@ -14,25 +14,25 @@ interface Session {
   slideHistory: { slide: number; seenAt: string }[]
 }
 
+const TOTAL_SLIDES = 16
+
 const SLIDE_LABELS: Record<number, string> = {
-  1: 'The Pitch',
-  2: 'Disclaimer',
-  3: "300% not eligible…",
-  4: 'I like you',
-  5: "Not proposing",
-  6: 'Be my girlfriend',
-  7: 'Know each other',
-  8: "Won't regret this",
-  9: 'More than I planned',
-  10: 'Not rushing',
-  11: "Situation isn't perfect",
-  12: 'A slow honest shot',
-  13: "Let's just try",
-  14: 'Favourites list',
-  15: 'The one tab',
-  16: 'Best version of me',
-  17: 'Asking you out',
-  18: 'What do you say?',
+  1:  'Project Coffee ☕',
+  2:  'Disclaimer',
+  3:  "Wasn't supposed to feel this",
+  4:  'I like you — no ctrl+Z',
+  5:  'Not a proposal, just coffee',
+  6:  'More than I budgeted for',
+  7:  'Your eyes though…',
+  8:  "I WANT to know you",
+  9:  "Not rushing anything",
+  10: "Situation? Lol, no",
+  11: '300% valid reasons to say no',
+  12: 'The list of why you should say yes',
+  13: "People who say yes",
+  14: 'One coffee, real conversation',
+  15: 'This is me. Santy.',
+  16: 'So… what do you say? ☕',
 }
 
 function timeAgo(seconds: number): string {
@@ -54,6 +54,7 @@ export default function AdminPage() {
   const [sessions, setSessions] = useState<Session[]>([])
   const [expanded, setExpanded] = useState<string | null>(null)
   const [fsError, setFsError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const login = () => {
     if (password === 'Santy') {
@@ -67,22 +68,25 @@ export default function AdminPage() {
   useEffect(() => {
     if (!authed) return
     setFsError('')
+    setLoading(true)
     const unsub = onSnapshot(
       collection(db, 'sessions'),
       (snap) => {
         const data = snap.docs
           .map(d => ({ id: d.id, ...d.data() } as Session))
-          .sort((a, b) => {
-            const ta = a.updatedAt?.seconds ?? 0
-            const tb = b.updatedAt?.seconds ?? 0
-            return tb - ta
-          })
+          .sort((a, b) => (b.updatedAt?.seconds ?? 0) - (a.updatedAt?.seconds ?? 0))
         setSessions(data)
         setFsError('')
+        setLoading(false)
       },
       (err) => {
-        console.error('[admin] snapshot error:', err)
-        setFsError(`Firestore error: ${err.message}. Go to Firebase Console → Firestore → Rules and set allow read, write: if true;`)
+        console.error('[admin] snapshot error:', err.code, err.message)
+        setLoading(false)
+        if (err.code === 'permission-denied') {
+          setFsError('permission-denied')
+        } else {
+          setFsError(err.message)
+        }
       }
     )
     return unsub
@@ -111,9 +115,9 @@ export default function AdminPage() {
   }
 
   const total = sessions.length
-  const completed = sessions.filter(s => s.maxSlide === s.totalSlides).length
+  const completed = sessions.filter(s => s.maxSlide >= TOTAL_SLIDES).length
   const avgSlide = total > 0
-    ? (sessions.reduce((sum, s) => sum + s.maxSlide, 0) / total).toFixed(1)
+    ? (sessions.reduce((sum, s) => sum + (s.maxSlide || 1), 0) / total).toFixed(1)
     : '—'
 
   return (
@@ -121,7 +125,7 @@ export default function AdminPage() {
       <div className="admin-header">
         <div>
           <h1 className="admin-title">Slide Journey Tracker</h1>
-          <p className="admin-subtitle">Live · updates in real-time</p>
+          <p className="admin-subtitle">{loading ? 'Connecting…' : 'Live · updates in real-time'}</p>
         </div>
         <button className="admin-back" onClick={() => window.location.hash = ''}>← Back</button>
       </div>
@@ -143,9 +147,22 @@ export default function AdminPage() {
 
       {fsError && (
         <div className="admin-fs-error">
-          <strong>⚠️ Rules not set</strong>
-          <p>Go to <strong>Firebase Console → Firestore → Rules</strong> and publish:</p>
-          <code>{'allow read, write: if true;'}</code>
+          <strong>⚠️ {fsError === 'permission-denied' ? 'Firestore rules blocking access' : 'Firestore error'}</strong>
+          {fsError === 'permission-denied' ? (
+            <>
+              <p>Go to <strong>Firebase Console → Firestore Database → Rules</strong> and publish:</p>
+              <code>{`rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /sessions/{id} {
+      allow read, write: if true;
+    }
+  }
+}`}</code>
+            </>
+          ) : (
+            <p>{fsError}</p>
+          )}
         </div>
       )}
 
@@ -154,9 +171,9 @@ export default function AdminPage() {
           <p className="admin-empty">No sessions yet. Share the link to start tracking.</p>
         )}
         {sessions.map(session => {
-          const pct = Math.round((session.maxSlide / (session.totalSlides || 16)) * 100)
+          const pct = Math.round(((session.maxSlide || 1) / TOTAL_SLIDES) * 100)
           const isOpen = expanded === session.id
-          const finished = session.maxSlide === (session.totalSlides || 16)
+          const finished = (session.maxSlide || 0) >= TOTAL_SLIDES
 
           return (
             <div key={session.id} className="session-card">
@@ -188,7 +205,7 @@ export default function AdminPage() {
                 <div className="session-detail">
                   <p className="detail-heading">Slide Journey</p>
                   <div className="slide-bubbles">
-                    {Array.from({ length: session.totalSlides || 16 }, (_, i) => {
+                    {Array.from({ length: TOTAL_SLIDES }, (_, i) => {
                       const n = i + 1
                       const seen = session.slideHistory?.some(h => h.slide === n)
                       return (
@@ -201,7 +218,7 @@ export default function AdminPage() {
                   <div className="detail-meta">
                     <p>Started: {session.startedAt ? formatTime(session.startedAt.seconds) : '—'}</p>
                     <p>Last active: {session.updatedAt ? formatTime(session.updatedAt.seconds) : '—'}</p>
-                    <p>Slides seen: {session.maxSlide} / {session.totalSlides || 16}</p>
+                    <p>Slides seen: {session.maxSlide || 1} / {TOTAL_SLIDES}</p>
                   </div>
                 </div>
               )}

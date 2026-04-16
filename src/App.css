@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
+
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -8,7 +10,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Georgia', 'Times New Roman', serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 /* ── Desktop gate ── */
@@ -37,13 +39,14 @@ body {
 .gate-emoji { font-size: 52px; display: block; margin-bottom: 16px; }
 .gate-title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 500;
   color: #ffd6e7;
   margin: 0 0 12px;
-  font-family: Georgia, serif;
+  font-family: 'Playfair Display', serif;
 }
 .gate-text {
   font-size: 15px;
+  font-weight: 300;
   color: rgba(255,200,220,0.7);
   line-height: 1.6;
   margin: 0;
@@ -103,6 +106,100 @@ body {
   to   { transform: scale(1) translateY(0);        opacity: 1;   }
 }
 
+/* ── Page flip animations ── */
+.flip-left {
+  animation: flipLeft 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+}
+.flip-right {
+  animation: flipRight 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: right center;
+  transform-style: preserve-3d;
+}
+@keyframes flipLeft {
+  0%   { transform: perspective(1200px) rotateY(0deg);    opacity: 1; }
+  50%  { transform: perspective(1200px) rotateY(-55deg);  opacity: 0.5; }
+  100% { transform: perspective(1200px) rotateY(-90deg);  opacity: 0; }
+}
+@keyframes flipRight {
+  0%   { transform: perspective(1200px) rotateY(0deg);   opacity: 1; }
+  50%  { transform: perspective(1200px) rotateY(55deg);  opacity: 0.5; }
+  100% { transform: perspective(1200px) rotateY(90deg);  opacity: 0; }
+}
+
+/* ── Character mascot ── */
+.character-wrap {
+  position: absolute;
+  bottom: 0;
+  right: 20px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: characterPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+}
+@keyframes characterPopIn {
+  from { transform: translateY(80px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.character-flip {
+  animation: characterFlipAnim 0.42s ease-in-out;
+}
+@keyframes characterFlipAnim {
+  0%   { transform: scaleX(1)    translateY(0); }
+  30%  { transform: scaleX(-0.6) translateY(-8px); }
+  60%  { transform: scaleX(1.15) translateY(-4px); }
+  100% { transform: scaleX(1)    translateY(0); }
+}
+.character-img {
+  width: 72px;
+  height: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  animation: characterFloat 3s ease-in-out infinite;
+  transition: transform 0.15s;
+}
+.character-img:hover { transform: scale(1.12); }
+@keyframes characterFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* ── Speech bubble ── */
+.speech-bubble {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 0;
+  background: white;
+  color: #1a0010;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 14px 14px 4px 14px;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  pointer-events: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  right: 12px;
+  width: 0; height: 0;
+  border-left: 7px solid transparent;
+  border-top: 8px solid white;
+}
+.animate-bubble {
+  animation: bubblePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes bubblePop {
+  from { transform: scale(0.6) translateY(8px); opacity: 0; }
+  to   { transform: scale(1)   translateY(0);   opacity: 1; }
+}
+
 /* Glow overlay */
 .card-glow {
   position: absolute;
@@ -142,145 +239,71 @@ body {
   flex-direction: column;
   color: white;
 }
-
-.card-tag {
-  align-self: flex-start;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  background: rgba(255,255,255,0.18);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.25);
-  padding: 5px 14px;
-  border-radius: 20px;
-  color: rgba(255,255,255,0.9);
-  font-family: system-ui, sans-serif;
-}
-
-.card-emoji {
-  font-size: 64px;
-  line-height: 1;
-  margin: auto 0;
-  text-align: center;
-  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3));
-  animation: floatEmoji 4s ease-in-out infinite;
-}
-
-@keyframes floatEmoji {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-10px); }
-}
-
 .card-inner-centered {
   align-items: center;
   justify-content: center;
   text-align: center;
 }
 
+/* ── Title slide ── */
 .card-title {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.3px;
-  margin: 0 0 10px;
-  color: white;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.3);
-  font-family: Georgia, 'Times New Roman', serif;
-}
-
-.card-title-hero {
-  font-weight: 900;
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
   margin: 0;
-  text-shadow: 0 6px 40px rgba(0,0,0,0.45);
+  color: white;
+  text-shadow: 0 4px 32px rgba(0,0,0,0.4);
+  font-family: 'Playfair Display', serif;
 }
 .card-title-xl {
-  font-size: 72px;
-  line-height: 1.05;
-  letter-spacing: -2px;
-}
-.card-title-md {
-  font-size: 36px;
-  line-height: 1.25;
-  letter-spacing: -0.5px;
-}
-
-.card-verse {
-  font-size: 14px;
-  font-style: italic;
-  color: rgba(255,255,255,0.75);
-  margin: 0 0 20px;
-  font-family: Georgia, serif;
-  letter-spacing: 0.2px;
-}
-
-.card-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  color: rgba(255,255,255,0.4);
-  font-size: 14px;
-}
-.card-divider::before,
-.card-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: rgba(255,255,255,0.2);
-}
-
-.card-quote {
-  font-size: 15px;
-  line-height: 1.65;
-  color: rgba(255,255,255,0.88);
-  font-style: italic;
-  font-family: Georgia, 'Times New Roman', serif;
-  flex: 1;
-  margin: 0;
-}
-
-/* ── Plain centered text ── */
-.plain-text {
-  font-size: 32px;
-  font-weight: 800;
-  color: white;
-  margin: 0;
-  font-family: Georgia, 'Times New Roman', serif;
-  line-height: 1.25;
-  letter-spacing: -0.3px;
-  text-align: center;
-  text-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  font-size: 56px;
+  font-weight: 600;
 }
 
 /* ── Disclaimer slide ── */
 .disclaimer-label {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
-  margin: 0 0 20px;
-  font-family: system-ui, sans-serif;
+  color: rgba(255,255,255,0.55);
+  margin: 0 0 16px;
+  font-family: 'DM Sans', sans-serif;
 }
 .disclaimer-warning {
-  font-size: 64px;
-  font-weight: 900;
+  font-size: 56px;
+  font-weight: 500;
   color: white;
   margin: 0 0 20px;
-  font-family: Georgia, serif;
-  letter-spacing: -2px;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -1px;
   text-shadow: 0 6px 32px rgba(0,0,0,0.4);
   line-height: 1;
+  font-style: italic;
 }
 .disclaimer-body {
-  font-size: 18px;
+  font-size: 17px;
+  font-weight: 300;
   font-style: italic;
   color: rgba(255,255,255,0.85);
   margin: 0;
-  font-family: Georgia, serif;
-  line-height: 1.6;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.65;
   text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+/* ── Plain text slides ── */
+.plain-text {
+  font-size: 22px;
+  font-weight: 300;
+  color: white;
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.55;
+  letter-spacing: 0.1px;
+  text-align: center;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.3);
 }
 
 /* ── Wait slides ── */
@@ -291,30 +314,29 @@ body {
   text-align: center;
 }
 .slide-main-text {
-  font-size: 36px;
-  font-weight: 900;
+  font-size: 24px;
+  font-weight: 400;
   color: white;
   margin: 0;
-  font-family: Georgia, serif;
-  letter-spacing: -0.5px;
-  line-height: 1.2;
-  text-shadow: 0 4px 24px rgba(0,0,0,0.35);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.45;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.3);
 }
-.slide-gap { height: 36px; }
+.slide-gap { height: 32px; }
 .wait-1, .wait-2, .wait-3 {
-  margin: 3px 0;
-  font-weight: 700;
+  margin: 2px 0;
+  font-weight: 400;
   color: rgba(255,255,255,0.9);
-  font-family: Georgia, serif;
+  font-family: 'Playfair Display', serif;
   font-style: italic;
   text-shadow: 0 2px 12px rgba(0,0,0,0.3);
   line-height: 1.2;
 }
-.wait-1 { font-size: 36px; }
-.wait-2 { font-size: 26px; opacity: 0.75; }
-.wait-3 { font-size: 18px; opacity: 0.5; }
+.wait-1 { font-size: 34px; }
+.wait-2 { font-size: 24px; opacity: 0.7; }
+.wait-3 { font-size: 16px; opacity: 0.45; }
 
-/* ── Arrows overlaid on the card ── */
+/* ── Arrows ── */
 .arrow-overlay {
   position: absolute;
   top: 50%;
@@ -323,8 +345,8 @@ body {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.1);
   backdrop-filter: blur(10px);
   color: white;
   font-size: 22px;
@@ -338,18 +360,18 @@ body {
 .arrow-left  { left: 8px; }
 .arrow-right { right: 8px; }
 .arrow-overlay:hover:not(:disabled) {
-  background: rgba(255,255,255,0.28);
+  background: rgba(255,255,255,0.22);
   transform: translateY(-50%) scale(1.1);
 }
 .arrow-overlay:active:not(:disabled) {
   transform: translateY(-50%) scale(0.94);
 }
 .arrow-overlay:disabled {
-  opacity: 0.15;
+  opacity: 0.12;
   cursor: not-allowed;
 }
 
-/* ── Dots below the card ── */
+/* ── Dots ── */
 .bottom-dots {
   display: flex;
   justify-content: center;
@@ -358,19 +380,18 @@ body {
   padding: 16px 0 28px;
   flex-shrink: 0;
 }
-
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.3);
   border: none;
   padding: 0;
   cursor: pointer;
   transition: all 0.25s ease;
 }
 .dot-active {
-  width: 24px;
+  width: 22px;
   border-radius: 4px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.85);
 }

@@ -39,12 +39,14 @@ function getBrowser(): string {
   return 'Browser'
 }
 
-export function useSession(activeIndex: number, totalSlides: number) {
+export function useSession(activeIndex: number, totalSlides: number, enabled: boolean) {
   const sessionId = useRef(getSessionId())
   const maxReached = useRef(0)
   const isFirstWrite = useRef(true)
 
   useEffect(() => {
+    if (!enabled) return
+
     const slideNum = activeIndex + 1
     if (slideNum > maxReached.current) maxReached.current = slideNum
 
@@ -67,5 +69,5 @@ export function useSession(activeIndex: number, totalSlides: number) {
 
     setDoc(doc(db, 'sessions', sessionId.current), payload, { merge: true })
       .catch(err => console.error('[session] write failed — check Firestore rules:', err.code, err.message))
-  }, [activeIndex, totalSlides])
+  }, [activeIndex, totalSlides, enabled])
 }

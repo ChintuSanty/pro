@@ -69,6 +69,7 @@ body {
   padding: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
   touch-action: pan-y;
   cursor: grab;
   user-select: none;
@@ -234,7 +235,7 @@ body {
 .card-inner {
   position: relative;
   z-index: 1;
-  padding: 36px 32px 32px;
+  padding: 36px 32px 80px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -412,8 +413,7 @@ body {
 /* ── Arrows ── */
 .arrow-overlay {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  bottom: 24px;
   z-index: 20;
   width: 36px;
   height: 36px;
@@ -430,14 +430,14 @@ body {
   justify-content: center;
   transition: background 0.2s, transform 0.15s, opacity 0.2s;
 }
-.arrow-left  { left: 8px; }
-.arrow-right { right: 8px; }
+.arrow-left  { left: 20px; }
+.arrow-right { right: 20px; }
 .arrow-overlay:hover:not(:disabled) {
   background: rgba(255,255,255,0.22);
-  transform: translateY(-50%) scale(1.1);
+  transform: scale(1.1);
 }
 .arrow-overlay:active:not(:disabled) {
-  transform: translateY(-50%) scale(0.94);
+  transform: scale(0.94);
 }
 .arrow-overlay:disabled {
   opacity: 0.12;

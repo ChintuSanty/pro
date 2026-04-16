@@ -6,7 +6,8 @@
 body {
   margin: 0;
   background: #1a0010;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;

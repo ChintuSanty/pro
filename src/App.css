@@ -413,7 +413,7 @@ body {
 /* ── Arrows ── */
 .arrow-overlay {
   position: absolute;
-  bottom: 24px;
+  bottom: 72px;
   z-index: 20;
   width: 36px;
   height: 36px;

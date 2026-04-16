@@ -163,7 +163,7 @@ function ResponseCard({ text }: { text: string }) {
     return (
       <div className="card-inner card-inner-centered">
         <p className="response-emoji">🥹☕</p>
-        <p className="response-confirm">She said yes.</p>
+        <p className="response-confirm">You said yes.</p>
         <p className="response-sub">See you over coffee. ☕</p>
       </div>
     )
@@ -174,7 +174,7 @@ function ResponseCard({ text }: { text: string }) {
       <div className="card-inner card-inner-centered">
         <p className="response-emoji">👀</p>
         <p className="response-confirm">Noted.</p>
-        <p className="response-sub">I'll be here. Take your time.</p>
+        <p className="response-sub">I'll wait. And if you need more time, I'll make a Part 2. The production value will be significantly higher.</p>
       </div>
     )
   }

@@ -68,7 +68,7 @@ const cards: Card[] = [
     peek: 'linear-gradient(160deg, #f06292, #ab47bc)',
   },
   {
-    id: 12, type: 'plain', text: "So here's why you should say yes — and yes, I made a list, because I'm that guy:\n\n☕ Worst case? Great coffee and zero awkwardness because I'm genuinely fun to talk to.\n🎮 I will absolutely let you win. Sometimes. Okay rarely. But the offer stands.\n🫂 I'm loyal to a fault. When I'm in, I'm in. No fine print.\n😂 I will make you laugh. Not on purpose always, but still — it counts.\n👀 I promise to always look at you like you're worth getting lost in. Because you are.",
+    id: 12, type: 'plain', text: "So here's why you should say yes:\n\n☕ Worst case — great coffee, zero awkwardness.\n🎮 I'll let you win. Sometimes.\n🫂 When I'm in, I'm in. No fine print.\n😂 I will make you laugh. Accidentally counts too.\n👀 I'll never stop looking at you like you're worth getting lost in.",
     gradient: 'linear-gradient(160deg, #e53935 0%, #8e24aa 55%, #1a0030 100%)',
     peek: 'linear-gradient(160deg, #ef9a9a, #ba68c8)',
   },

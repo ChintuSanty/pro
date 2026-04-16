@@ -8,9 +8,11 @@ interface Session {
   device: string
   startedAt: { seconds: number } | null
   updatedAt: { seconds: number } | null
+  respondedAt: { seconds: number } | null
   lastSlide: number
   maxSlide: number
   totalSlides: number
+  response?: 'yes' | 'ask_again'
   slideHistory: { slide: number; seenAt: string }[]
 }
 
@@ -200,6 +202,15 @@ service cloud.firestore {
               <p className="session-last-label">
                 Last seen: <strong>{SLIDE_LABELS[session.maxSlide] || `Slide ${session.maxSlide}`}</strong>
               </p>
+
+              {session.response && (
+                <div className={`response-badge ${session.response === 'yes' ? 'response-yes' : 'response-later'}`}>
+                  {session.response === 'yes' ? '☕ She said YES!' : '👀 Ask me again'}
+                  {session.respondedAt && (
+                    <span className="response-time"> · {timeAgo(session.respondedAt.seconds)}</span>
+                  )}
+                </div>
+              )}
 
               {isOpen && (
                 <div className="session-detail">

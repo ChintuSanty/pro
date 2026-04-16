@@ -2,6 +2,15 @@ import { useEffect, useRef } from 'react'
 import { doc, setDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
 import { db } from './firebase'
 
+export async function recordResponse(response: 'yes' | 'ask_again') {
+  const id = localStorage.getItem('prop_session_id')
+  if (!id) return
+  await setDoc(doc(db, 'sessions', id), {
+    response,
+    respondedAt: serverTimestamp(),
+  }, { merge: true }).catch(err => console.error('[session] response write failed:', err.code))
+}
+
 function getSessionId(): string {
   let id = localStorage.getItem('prop_session_id')
   if (!id) {

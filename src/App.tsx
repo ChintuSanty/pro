@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import './App.css'
-import { useSession } from './useSession'
+import { useSession, recordResponse } from './useSession'
 import AdminPage from './AdminPage'
 
 interface Card {
   id: number
   text: string
-  type: 'title' | 'disclaimer' | 'wait' | 'plain'
+  type: 'title' | 'disclaimer' | 'wait' | 'plain' | 'response'
   gradient: string
   peek: string
 }
@@ -88,7 +88,7 @@ const cards: Card[] = [
     peek: 'linear-gradient(160deg, #f48fb1, #ab47bc)',
   },
   {
-    id: 16, type: 'plain', text: "So… what do you say? ☕",
+    id: 16, type: 'response', text: "So… what do you say? ☕",
     gradient: 'linear-gradient(160deg, #ff6b9d 0%, #c44569 50%, #8b2252 100%)',
     peek: 'linear-gradient(160deg, #ff8fab, #f48fb1)',
   },
@@ -149,6 +149,51 @@ function Character({ show, onFlip }: { show: boolean; onFlip: boolean }) {
   )
 }
 
+/* ── Response card ── */
+function ResponseCard({ text }: { text: string }) {
+  const [picked, setPicked] = useState<'yes' | 'ask_again' | null>(null)
+
+  const handlePick = async (choice: 'yes' | 'ask_again') => {
+    if (picked) return
+    setPicked(choice)
+    await recordResponse(choice)
+  }
+
+  if (picked === 'yes') {
+    return (
+      <div className="card-inner card-inner-centered">
+        <p className="response-emoji">🥹☕</p>
+        <p className="response-confirm">She said yes.</p>
+        <p className="response-sub">See you over coffee. ☕</p>
+      </div>
+    )
+  }
+
+  if (picked === 'ask_again') {
+    return (
+      <div className="card-inner card-inner-centered">
+        <p className="response-emoji">👀</p>
+        <p className="response-confirm">Noted.</p>
+        <p className="response-sub">I'll be here. Take your time.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card-inner card-inner-centered">
+      <p className="response-question">{text}</p>
+      <div className="response-buttons">
+        <button className="resp-btn resp-yes" onClick={() => handlePick('yes')}>
+          Yes ☕
+        </button>
+        <button className="resp-btn resp-later" onClick={() => handlePick('ask_again')}>
+          Ask me again
+        </button>
+      </div>
+    </div>
+  )
+}
+
 /* ── Card content ── */
 function CardContent({ card }: { card: Card }) {
   if (card.type === 'title') {
@@ -179,6 +224,9 @@ function CardContent({ card }: { card: Card }) {
         </div>
       </div>
     )
+  }
+  if (card.type === 'response') {
+    return <ResponseCard text={card.text} />
   }
   return (
     <div className="card-inner card-inner-centered">

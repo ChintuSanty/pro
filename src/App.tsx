@@ -245,7 +245,7 @@ export default function App() {
   const dragStartX = useRef(0)
   const isDragging = useRef(false)
 
-  useSession(activeIndex, cards.length)
+  useSession(activeIndex, cards.length, !isAdmin)
 
   useEffect(() => {
     const handler = () => setIsAdmin(window.location.hash === '#admin')

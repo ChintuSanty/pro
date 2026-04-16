@@ -124,6 +124,7 @@ export default function AdminPage() {
 
   return (
     <div className="admin-page">
+      <div className="admin-page-inner">
       <div className="admin-header">
         <div>
           <h1 className="admin-title">Slide Journey Tracker</h1>
@@ -236,6 +237,7 @@ service cloud.firestore {
             </div>
           )
         })}
+      </div>
       </div>
     </div>
   )

@@ -7,7 +7,6 @@ body {
   margin: 0;
   background: #1a0010;
   height: 100vh;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
